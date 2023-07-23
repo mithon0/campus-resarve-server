@@ -21,6 +21,7 @@ const client = new MongoClient(uri, {
   }
 });
 const usersCollections = client.db("campus_reserve").collection("users");
+const admissionCollections = client.db("campus_reserve").collection("admission");
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -67,6 +68,18 @@ async function run() {
         const replacement =updatedUser;
         const result =await usersCollections.replaceOne(query,replacement);
         res.send(result)
+    });
+    app.post('/admission',async(req,res)=>{
+      const admissionData =req.body;
+      console.log(admissionData);
+      const result = await admissionCollections.insertOne(admissionData) ;
+      res.send(result)
+    })
+    app.get('/admission/:email',async(req,res)=>{
+      const email =req.params.email;
+      const query ={email:email}
+      const result =await admissionCollections.find(query).toArray();
+      res.send(result)
     })
 
 
