@@ -20,7 +20,7 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
-
+const usersCollections = client.db("campus_reserve").collection("users");
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -34,6 +34,38 @@ async function run() {
         const id =req.params.id;
         const query ={_id:new ObjectId(id)}
         const result =await collageCollections.findOne(query);
+        res.send(result)
+    });
+
+    app.post('/users',async(req,res)=>{
+      const user =req.body
+      console.log(user);
+      const email =user.email;
+      console.log(email);
+      const existingUser =await usersCollections.findOne(email)
+      if(existingUser){
+        const result =await usersCollections.insertOne(user);
+      res.send(result)
+      }else{
+        res.send({})
+      };
+      
+      
+    })
+    app.get('/user/:email',async(req,res)=>{
+      const email =req.params.email
+      console.log(email);
+      const query ={email:email}
+      const result =await usersCollections.findOne(query);
+      res.send(result)
+    })
+
+    app.put('/updateusers', async(req,res)=>{
+        const updatedUser =req.body;
+        console.log(updatedUser);
+        const query ={email:updatedUser.email}
+        const replacement =updatedUser;
+        const result =await usersCollections.replaceOne(query,replacement);
         res.send(result)
     })
 
